@@ -8,23 +8,17 @@
 <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-primary-fixed-dim/20 rounded-full blur-3xl"></div>
 <div class="absolute bottom-[-5%] left-[-5%] w-80 h-80 bg-surface-container-high/30 rounded-full blur-3xl"></div>
 <div class="w-full max-w-[440px] z-10">
-<div class="flex flex-col items-center mb-lg">
-<div class="w-16 h-16 clinical-gradient rounded-xl flex items-center justify-center mb-sm soft-elevation">
-<span class="material-symbols-outlined text-white text-[32px]" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+<div class="flex flex-col items-center text-center mb-lg">
+<img class="h-16 w-auto object-contain mb-sm" src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Healio"/>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Welcome back to your health hub</p>
 </div>
-<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Healio</h1>
-</div>
-<div class="login-card-backdrop border border-outline-variant rounded-xl overflow-hidden soft-elevation">
-<div class="clinical-gradient px-lg py-xl text-center">
-<h2 class="font-headline-lg-mobile md:font-headline-lg text-white mb-xs">Welcome Back</h2>
-<p class="text-primary-fixed font-body-sm opacity-90">Secure access to your health records</p>
-</div>
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl overflow-hidden soft-elevation">
 <div class="p-lg space-y-md">
 {% include "_stitch_flash.html" %}
 <form method="POST">
 <div class="space-y-xs">
 <label class="block font-label-md text-on-surface-variant ml-1" for="patient-code">Patient Code</label>
-<div class="relative flex items-center group input-focus-ring border border-outline-variant bg-surface-container-lowest rounded-lg transition-all duration-200">
+<div class="relative flex items-center group input-focus-ring border border-outline-variant bg-surface-container-low rounded-lg transition-all duration-200">
 <div class="pl-md pointer-events-none text-on-surface-variant group-focus-within:text-primary transition-colors">
 <span class="material-symbols-outlined text-[20px]">badge</span>
 </div>
@@ -33,7 +27,7 @@
 </div>
 <div class="space-y-xs mt-md">
 <label class="block font-label-md text-on-surface-variant ml-1" for="password">Password</label>
-<div class="relative flex items-center group input-focus-ring border border-outline-variant bg-surface-container-lowest rounded-lg transition-all duration-200">
+<div class="relative flex items-center group input-focus-ring border border-outline-variant bg-surface-container-low rounded-lg transition-all duration-200">
 <div class="pl-md pointer-events-none text-on-surface-variant group-focus-within:text-primary transition-colors">
 <span class="material-symbols-outlined text-[20px]">lock</span>
 </div>
@@ -46,24 +40,23 @@
 <label class="block font-label-md text-on-surface-variant" for="doctor-code">Doctor Code</label>
 <span class="text-label-sm text-outline font-medium italic">Required</span>
 </div>
-<div class="relative flex items-center group input-focus-ring border border-outline-variant bg-surface-container-lowest rounded-lg transition-all duration-200">
+<div class="relative flex items-center group input-focus-ring border border-outline-variant bg-surface-container-low rounded-lg transition-all duration-200">
 <div class="pl-md pointer-events-none text-on-surface-variant group-focus-within:text-primary transition-colors">
 <span class="material-symbols-outlined text-[20px]">stethoscope</span>
 </div>
 <input class="w-full h-[48px] bg-transparent border-none focus:ring-0 px-md font-body-md text-on-surface placeholder:text-outline/50" id="doctor-code" name="doctor_code" placeholder="DR-9921" type="text" autocapitalize="characters" required/>
 </div>
 </div>
-<div class="flex items-center justify-between py-xs mt-base">
+<div class="flex items-center justify-between py-xs mt-base px-1">
 <label class="flex items-center space-x-2 cursor-pointer group">
-<input class="w-5 h-5 border-outline-variant rounded text-primary focus:ring-primary/20" type="checkbox" name="remember_device" value="yes"/>
-<span class="font-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Remember device</span>
+<input class="w-4 h-4 text-primary bg-surface-container rounded border-outline-variant focus:ring-primary/20" type="checkbox" name="remember_device" value="yes"/>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-on-surface transition-colors">Remember this device</span>
 </label>
-<button class="font-label-md text-primary hover:underline transition-all" type="button" onclick="openContactModal()">Forgot code?</button>
+<button class="font-label-md text-label-md text-primary hover:underline transition-all" type="button" onclick="openContactModal()">Forgot code?</button>
 </div>
-<div class="pt-base">
-<button class="w-full h-[48px] bg-primary text-white font-label-md rounded-full hover:bg-primary-container active:scale-[0.98] transition-all duration-150 flex items-center justify-center space-x-2 shadow-lg shadow-primary/10" type="submit" id="login-btn">
-<span>Login to Healio</span>
-<span class="material-symbols-outlined text-[18px]">login</span>
+<div class="pt-md">
+<button class="btn-active w-full bg-primary text-on-primary py-md rounded-lg font-headline-md text-headline-md shadow-md hover:brightness-110 transition-all duration-150 flex items-center justify-center gap-sm" type="submit" id="login-btn">
+<span>Log In</span>
 </button>
 </div>
 </form>
@@ -78,16 +71,23 @@ Are you a doctor? <a class="font-label-md text-primary hover:text-primary-contai
 </p>
 </div>
 </div>
-<div class="mt-lg flex flex-wrap justify-center gap-md opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
-<div class="flex items-center space-x-1.5">
-<span class="material-symbols-outlined text-sm">encrypted</span>
-<span class="font-label-sm uppercase tracking-widest text-[10px]">HIPAA Compliant</span>
+<footer class="flex flex-col items-center gap-md mt-lg">
+<div class="flex items-center justify-center gap-xl bg-surface-container-high/50 px-lg py-sm rounded-full backdrop-blur-sm border border-outline-variant/20">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">verified_user</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Secure Encryption</span>
 </div>
-<div class="flex items-center space-x-1.5">
-<span class="material-symbols-outlined text-sm">verified_user</span>
-<span class="font-label-sm uppercase tracking-widest text-[10px]">256-bit AES</span>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">gavel</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">HIPAA Compliant</span>
 </div>
 </div>
+<div class="text-center px-lg">
+<p class="font-label-sm text-label-sm text-outline">
+By logging in, you agree to Healio's <a class="text-primary hover:underline" href="{{ url_for('terms') }}">Terms of Service</a> and <a class="text-primary hover:underline" href="{{ url_for('privacy') }}">Privacy Policy</a>.
+</p>
+</div>
+</footer>
 </div>
 </main>
 <div class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-lg hidden opacity-0 transition-opacity duration-300" id="contact-modal">
@@ -100,13 +100,9 @@ Are you a doctor? <a class="font-label-md text-primary hover:text-primary-contai
 <button class="w-full py-md bg-primary text-on-primary rounded-xl font-semibold" onclick="closeContactModal()">Got it</button>
 </div>
 </div>
-<footer class="p-md text-center">
-<p class="font-label-sm text-outline">© 2026 Healio Health Systems. All rights reserved.</p>
-</footer>
 <script>
         const loginBtn = document.getElementById('login-btn');
         loginBtn.addEventListener('click', () => {
-            const originalContent = loginBtn.innerHTML;
             loginBtn.innerHTML = `
                 <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

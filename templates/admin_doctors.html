@@ -6,8 +6,8 @@
 <body class="bg-surface text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
 <header class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-mobile md:px-margin-desktop h-12">
 <div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary" data-icon="medical_services">medical_services</span>
-<h1 class="font-headline-md text-headline-md font-bold text-primary">Healio Admin — Doctors</h1>
+<img class="h-7 w-auto object-contain" src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Healio"/>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Admin — Doctors</h1>
 </div>
 <div class="flex items-center gap-4">
 <a class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full" data-icon="logout" href="{{ url_for('logout') }}" aria-label="Log out">logout</a>

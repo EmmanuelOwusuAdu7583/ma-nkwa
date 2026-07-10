@@ -11,11 +11,64 @@
 <p class="text-on-surface-variant font-body-md mt-1">Here's a snapshot of your care plan.</p>
 </section>
 {% include "_stitch_flash.html" %}
-<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
-<div class="md:col-span-12 grid grid-cols-1 sm:grid-cols-3 gap-gutter">
-<a class="bento-card bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-md flex items-center gap-4" href="{{ url_for('patient_checkin') }}">
+
+<section class="mb-lg">
+<div class="grid grid-cols-4 gap-gutter">
+<a class="flex flex-col items-center gap-2 group" href="{{ url_for('patient_checkin') }}">
+<div class="w-14 h-14 bg-primary-container text-on-primary-container rounded-2xl flex items-center justify-center group-hover:scale-105 transition-all shadow-[0px_4px_20px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined text-2xl">fact_check</span>
+</div>
+<span class="text-label-md font-label-md text-center">Check-in</span>
+</a>
+<a class="flex flex-col items-center gap-2 group" href="{{ url_for('weekly_tracker') }}">
+<div class="w-14 h-14 bg-primary-container text-on-primary-container rounded-2xl flex items-center justify-center group-hover:scale-105 transition-all shadow-[0px_4px_20px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined text-2xl">clinical_notes</span>
+</div>
+<span class="text-label-md font-label-md text-center">Weekly Tracker</span>
+</a>
+<a class="flex flex-col items-center gap-2 group" href="{{ url_for('patient_reports') }}">
+<div class="w-14 h-14 bg-primary-container text-on-primary-container rounded-2xl flex items-center justify-center group-hover:scale-105 transition-all shadow-[0px_4px_20px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined text-2xl">folder_open</span>
+</div>
+<span class="text-label-md font-label-md text-center">Reports</span>
+</a>
+<a class="flex flex-col items-center gap-2 group" href="{{ url_for('patient_notes') }}">
+<div class="w-14 h-14 bg-primary-container text-on-primary-container rounded-2xl flex items-center justify-center group-hover:scale-105 transition-all shadow-[0px_4px_20px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined text-2xl">description</span>
+</div>
+<span class="text-label-md font-label-md text-center">Notes</span>
+</a>
+</div>
+</section>
+
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-lg">
+<div class="md:col-span-7 bg-primary rounded-xl p-lg text-on-primary shadow-[0px_4px_20px_rgba(0,0,0,0.05)] relative overflow-hidden min-h-[200px] flex flex-col justify-between">
+<div class="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+<div>
+<h3 class="text-headline-md font-headline-md mb-xs">This Week's Adherence</h3>
+<p class="text-body-sm opacity-90">Based on your last 7 daily check-ins.</p>
+</div>
+<div class="mt-lg flex items-end justify-between">
+<div class="flex flex-col gap-1">
+{% if weekly_adherence_pct is not none %}
+<span class="text-headline-lg font-headline-lg">{{ weekly_adherence_pct }}%</span>
+<span class="text-label-md font-label-md opacity-80 uppercase tracking-wider">Doses Taken</span>
+{% else %}
+<span class="text-headline-md font-headline-md">No check-ins yet</span>
+{% endif %}
+</div>
+{% if latest_report and latest_report.satisfaction_rating %}
+<div class="flex flex-col items-end">
+<span class="text-headline-lg font-headline-lg">{{ latest_report.satisfaction_rating }}/5</span>
+<span class="text-label-md font-label-md opacity-80 uppercase tracking-wider">Satisfaction</span>
+</div>
+{% endif %}
+</div>
+</div>
+<div class="md:col-span-5 flex flex-col gap-gutter">
+<div class="bento-card bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-md flex items-center gap-4">
 <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined text-primary text-3xl" data-icon="pill">pill</span>
+<span class="material-symbols-outlined text-primary text-3xl">pill</span>
 </div>
 <div>
 <p class="text-on-surface-variant font-body-sm">Today's Medication</p>
@@ -25,76 +78,53 @@
 <p class="font-label-md text-label-md text-on-surface">Not yet logged</p>
 {% endif %}
 </div>
-</a>
+</div>
 <div class="bento-card bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-md flex items-center gap-4">
 <div class="w-12 h-12 rounded-full bg-secondary-container/10 flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined text-secondary text-3xl" data-icon="clinical_notes">clinical_notes</span>
+<span class="material-symbols-outlined text-secondary text-3xl">medication</span>
 </div>
 <div>
 <p class="text-on-surface-variant font-body-sm">Medication</p>
 <p class="font-label-md text-label-md text-on-surface">{{ patient.medication or "No medication on file" }}</p>
 </div>
 </div>
-<div class="bento-card bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-md flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-tertiary-container/10 flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined text-tertiary text-3xl" data-icon="star">star</span>
 </div>
-<div>
-<p class="text-on-surface-variant font-body-sm">Treatment Satisfaction</p>
-{% if latest_report and latest_report.satisfaction_rating %}
-<p class="font-label-md text-label-md text-on-surface">{{ latest_report.satisfaction_rating }} / 5 last week</p>
+</div>
+
+<section class="mb-lg">
+<div class="flex justify-between items-center mb-md">
+<h3 class="text-headline-md font-headline-md">Upcoming Appointment</h3>
+<a class="text-primary text-label-md font-label-md" href="{{ url_for('patient_checkin') }}">View</a>
+</div>
+{% if next_appointment %}
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant flex items-center gap-md">
+<div class="w-14 h-14 rounded-xl bg-surface-container overflow-hidden flex items-center justify-center shrink-0">
+{% if next_appointment.doctor_photo %}
+<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + next_appointment.doctor_photo) }}" alt="{{ next_appointment.doctor_name }}'s profile photo"/>
 {% else %}
-<p class="font-label-md text-label-md text-on-surface">No reports yet</p>
+<span class="material-symbols-outlined text-on-surface-variant">stethoscope</span>
 {% endif %}
 </div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-xs">
+<h4 class="font-bold text-body-lg text-primary">{{ next_appointment.doctor_name }}</h4>
+{% if next_appointment.appointment_type %}<span class="bg-primary-container/20 text-primary-container text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">{{ next_appointment.appointment_type }}</span>{% endif %}
+</div>
+{% if next_appointment.notes %}<p class="text-body-sm text-on-surface-variant">{{ next_appointment.notes }}</p>{% endif %}
+<div class="flex items-center gap-xs mt-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="text-label-md">{{ next_appointment.appointment_at }}</span>
 </div>
 </div>
-<div class="md:col-span-8 space-y-gutter">
-<a class="bento-card bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-md flex items-center justify-between group" href="{{ url_for('weekly_tracker') }}">
-<div class="flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center">
-<span class="material-symbols-outlined text-primary text-3xl" data-icon="fact_check">fact_check</span>
 </div>
-<div>
-<h3 class="font-label-md text-label-md text-on-surface">Complete Weekly Check-in</h3>
-<p class="text-on-surface-variant font-body-sm">Log symptoms, side effects, and how you're feeling.</p>
+{% else %}
+<div class="bento-card border-2 border-dashed border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-2 text-on-surface-variant min-h-[100px]">
+<span class="material-symbols-outlined text-3xl">calendar_today</span>
+<span class="font-label-md text-label-md">No appointments scheduled yet.</span>
 </div>
-</div>
-<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
-</a>
-<a class="bento-card bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-md flex items-center justify-between group" href="{{ url_for('patient_history') }}">
-<div class="flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-secondary-container/10 flex items-center justify-center">
-<span class="material-symbols-outlined text-secondary text-3xl" data-icon="history">history</span>
-</div>
-<div>
-<h3 class="font-label-md text-label-md text-on-surface">View Check-in History</h3>
-<p class="text-on-surface-variant font-body-sm">Review your past weekly submissions and trends.</p>
-</div>
-</div>
-<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
-</a>
-<a class="bento-card bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-md flex items-center justify-between group" href="{{ url_for('patient_notes') }}">
-<div class="flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-tertiary-container/10 flex items-center justify-center">
-<span class="material-symbols-outlined text-tertiary text-3xl" data-icon="description">description</span>
-</div>
-<div>
-<h3 class="font-label-md text-label-md text-on-surface">Notes from Your Doctor</h3>
-<p class="text-on-surface-variant font-body-sm">{{ patient.diagnosis or "—" }} · {{ patient.treatment_duration or "—" }}</p>
-</div>
-</div>
-<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
-</a>
-</div>
-<div class="md:col-span-4 space-y-gutter">
-<div class="h-48 rounded-xl overflow-hidden relative group">
-<img class="w-full h-full object-cover grayscale-[20%] group-hover:scale-105 transition-transform duration-700" alt="A clean, minimalist close-up of a modern stethoscope and a sleek tablet displaying medical graphs in a bright, airy clinical office." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAkwYoPVStPOeZK-hscWXfDOlnfmVvW9FGgdwQnzcO55HPesFbABXMiJiqPvieTApbVeTNe6qb9hq6Zvh8_eiNzJVLz23sh-S4crxnPs_6xEpOhrdJfb6_q3IO4jgjAsMLNIWiH8aAkiwDAuD_aaiShvwJb-JKA0ZOsm4l4twxXRCauoI_1RKzQfMICHOnCw5BdF1DT70kscFifqidrmZJoFrcshNFWOWGaLTp-9-ckrd5Nvh_mUhXMYirY-IZs0gdTrG-DBOmD4s"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-<div class="absolute bottom-4 left-4">
-<span class="bg-primary px-2 py-1 rounded text-[10px] text-white font-bold uppercase tracking-wider">Patient Portal</span>
-</div>
-</div>
+{% endif %}
+</section>
+
 <div class="bg-surface-container-low rounded-xl p-md border border-outline-variant">
 <h3 class="font-label-md text-label-md text-on-surface mb-xs">Recent notes from your doctor</h3>
 {% if recent_notes %}
@@ -109,8 +139,6 @@
 {% else %}
 <p class="text-body-sm text-on-surface-variant mt-sm">No notes yet from your doctor.</p>
 {% endif %}
-</div>
-</div>
 </div>
 </main>
 {% include "_stitch_bottomnav.html" %}

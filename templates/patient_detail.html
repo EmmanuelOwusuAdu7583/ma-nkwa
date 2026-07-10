@@ -32,8 +32,12 @@ notifications
 {% if request.method == "POST" %}{% include "_stitch_flash.html" %}{% endif %}
 
 <section class="bg-surface-container-lowest rounded-xl p-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col md:flex-row gap-lg items-start md:items-center">
-<div class="w-20 h-20 rounded-xl bg-surface-container overflow-hidden shrink-0">
-<img class="w-full h-full object-cover" alt="A close-up portrait of a patient, representing {{ patient.name }}." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2uc-oqjDHZZhcefUY313KTCO-A7i9DcSLo7n_abh4vDhrod76bq3GIbG_REQVF7QMAboY9aznxnJXIYbbx6hEINA2G5Od1RuFpMsLAJnktVbWMcd2Ava3u80SPjiCYl0TDf2_GNj9rNDu7DdUfDsmWjuL96-wFA_N3ksaoscLYur27Oam5LjRbaXNQhESAVm0nEQSBv4MveEPiPlLCiuVIUMizB9tgJPLvBSgzFT6IgpZyBZvm_HBdt8YSwJDneeQdyIgOp3u510"/>
+<div class="w-20 h-20 rounded-xl bg-surface-container overflow-hidden shrink-0 flex items-center justify-center">
+{% if patient.photo_filename %}
+<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + patient.photo_filename) }}" alt="{{ patient.name }}'s profile photo"/>
+{% else %}
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">person</span>
+{% endif %}
 </div>
 <div class="flex-grow grid grid-cols-2 md:grid-cols-4 gap-lg w-full">
 <div>

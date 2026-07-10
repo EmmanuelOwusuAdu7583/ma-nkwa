@@ -1125,6 +1125,23 @@ def patient_dashboard():
     """, (session["patient_id"],))
     latest_report = cursor.fetchone()
 
+    cursor.execute("""
+        SELECT took_medication FROM daily_checkins WHERE patient_id = ? ORDER BY check_date DESC LIMIT 7
+    """, (session["patient_id"],))
+    recent_checkins = cursor.fetchall()
+    weekly_adherence_pct = None
+    if recent_checkins:
+        taken = sum(1 for c in recent_checkins if c["took_medication"])
+        weekly_adherence_pct = round(100 * taken / len(recent_checkins))
+
+    cursor.execute("""
+        SELECT a.*, d.name as doctor_name, d.photo_filename as doctor_photo FROM appointments a
+        JOIN doctors d ON a.doctor_id = d.id
+        WHERE a.patient_id = ? AND a.appointment_at >= ? AND (a.status IS NULL OR a.status = 'scheduled')
+        ORDER BY a.appointment_at ASC LIMIT 1
+    """, (session["patient_id"], datetime.now().isoformat()))
+    next_appointment = cursor.fetchone()
+
     conn.close()
 
     return render_template(
@@ -1133,6 +1150,8 @@ def patient_dashboard():
         todays_checkin=todays_checkin,
         recent_notes=recent_notes,
         latest_report=latest_report,
+        weekly_adherence_pct=weekly_adherence_pct,
+        next_appointment=next_appointment,
         active="home",
     )
 

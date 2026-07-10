@@ -815,52 +815,45 @@ def doctor_reports():
     cursor.execute("SELECT id, name, patient_code FROM patients WHERE doctor_id = ? ORDER BY name", (session["doctor_id"],))
     patient_rows = cursor.fetchall()
 
-    patient_reports = []
     total_active_flags = 0
     total_resolved_flags = 0
     for p in patient_rows:
-        cursor.execute("""
-            SELECT took_medication FROM daily_checkins WHERE patient_id = ? ORDER BY check_date DESC LIMIT 14
-        """, (p["id"],))
-        checkins = cursor.fetchall()
-        adherence_pct = None
-        if checkins:
-            taken = sum(1 for c in checkins if c["took_medication"])
-            adherence_pct = round(100 * taken / len(checkins))
-
-        cursor.execute("""
-            SELECT satisfaction_rating FROM weekly_reports
-            WHERE patient_id = ? AND satisfaction_rating IS NOT NULL
-            ORDER BY week_number DESC LIMIT 1
-        """, (p["id"],))
-        latest_rating_row = cursor.fetchone()
-        latest_rating = latest_rating_row["satisfaction_rating"] if latest_rating_row else None
-
         cursor.execute("SELECT COUNT(*) as c FROM flags WHERE patient_id = ? AND resolved = 0", (p["id"],))
-        active_flags = cursor.fetchone()["c"]
+        total_active_flags += cursor.fetchone()["c"]
         cursor.execute("SELECT COUNT(*) as c FROM flags WHERE patient_id = ? AND resolved = 1", (p["id"],))
-        resolved_flags = cursor.fetchone()["c"]
+        total_resolved_flags += cursor.fetchone()["c"]
 
-        total_active_flags += active_flags
-        total_resolved_flags += resolved_flags
+    cursor.execute("""
+        SELECT mr.*, p.name as patient_name FROM medical_records mr
+        JOIN patients p ON mr.patient_id = p.id
+        WHERE mr.doctor_id = ? ORDER BY mr.created_at DESC
+    """, (session["doctor_id"],))
+    medical_records = cursor.fetchall()
 
-        patient_reports.append({
-            "id": p["id"],
-            "name": p["name"],
-            "patient_code": p["patient_code"],
-            "adherence_pct": adherence_pct,
-            "latest_rating": latest_rating,
-            "active_flags": active_flags,
-        })
+    cursor.execute("""
+        SELECT rx.*, p.name as patient_name FROM prescriptions rx
+        JOIN patients p ON rx.patient_id = p.id
+        WHERE rx.doctor_id = ? ORDER BY rx.created_at DESC
+    """, (session["doctor_id"],))
+    prescriptions = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT dn.*, p.name as patient_name FROM doctor_notes dn
+        JOIN patients p ON dn.patient_id = p.id
+        WHERE dn.doctor_id = ? ORDER BY dn.created_at DESC
+    """, (session["doctor_id"],))
+    notes = cursor.fetchall()
 
     conn.close()
 
     return render_template(
         "doctor_reports.html",
-        patient_reports=patient_reports,
         total_patients=len(patient_rows),
         total_active_flags=total_active_flags,
         total_resolved_flags=total_resolved_flags,
+        medical_records=medical_records,
+        prescriptions=prescriptions,
+        notes=notes,
         active="reports",
     )
 

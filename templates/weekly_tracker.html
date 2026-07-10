@@ -68,12 +68,13 @@
 </div>
 <input id="rating-input" name="satisfaction_rating" type="hidden" value="4"/>
 <div class="w-full pt-md mt-sm border-t border-outline-variant">
-<label class="block text-label-md font-label-md text-on-surface-variant mb-1" for="symptom_trend">Compared to last week, symptoms are...</label>
-<select class="w-full bg-surface-container-low border border-outline-variant rounded-lg p-sm text-body-sm focus:border-primary focus:ring-1 focus:ring-primary transition-all" id="symptom_trend" name="symptom_trend">
-<option value="better">Better</option>
-<option selected="" value="same">About the same</option>
-<option value="worse">Worse</option>
-</select>
+<label class="block text-label-md font-label-md text-on-surface-variant mb-2" for="trend-chips">Compared to last week, symptoms are...</label>
+<div class="flex gap-xs justify-center" id="trend-chips">
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant text-label-md font-label-md whitespace-nowrap hover:bg-surface-container-highest transition-colors" data-value="better" type="button">Better</button>
+<button class="px-5 py-2 rounded-full bg-primary text-on-primary text-label-md font-label-md whitespace-nowrap" data-value="same" type="button">About the same</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant text-label-md font-label-md whitespace-nowrap hover:bg-surface-container-highest transition-colors" data-value="worse" type="button">Worse</button>
+</div>
+<input id="symptom_trend" name="symptom_trend" type="hidden" value="same"/>
 </div>
 </div>
 
@@ -120,6 +121,20 @@ Your doctor will review this report at your next scheduled consultation.
         }
 
         updateStars(ratingInput.value);
+
+        const trendChips = document.querySelectorAll('#trend-chips button');
+        const trendInput = document.getElementById('symptom_trend');
+        trendChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                trendChips.forEach(btn => {
+                    btn.classList.remove('bg-primary', 'text-on-primary');
+                    btn.classList.add('bg-surface-container-high', 'text-on-surface-variant');
+                });
+                chip.classList.add('bg-primary', 'text-on-primary');
+                chip.classList.remove('bg-surface-container-high', 'text-on-surface-variant');
+                trendInput.value = chip.getAttribute('data-value');
+            });
+        });
 
         document.getElementById('tracker-form').addEventListener('submit', () => {
             const btn = document.getElementById('submit-btn');

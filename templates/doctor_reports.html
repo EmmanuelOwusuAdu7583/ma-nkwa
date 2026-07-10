@@ -58,46 +58,120 @@ notifications
 <p class="font-headline-lg text-headline-lg text-on-surface mt-xs">{{ total_resolved_flags }}</p>
 </div>
 </div>
-{% if patient_reports %}
-<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
-<div class="overflow-x-auto">
-<table class="w-full text-left">
-<thead class="bg-surface-container-low">
-<tr>
-<th class="px-lg py-sm font-label-sm text-label-sm text-on-surface-variant uppercase">Patient</th>
-<th class="px-lg py-sm font-label-sm text-label-sm text-on-surface-variant uppercase">Adherence (last 14 days)</th>
-<th class="px-lg py-sm font-label-sm text-label-sm text-on-surface-variant uppercase">Latest Satisfaction</th>
-<th class="px-lg py-sm font-label-sm text-label-sm text-on-surface-variant uppercase">Active Flags</th>
-</tr>
-</thead>
-<tbody>
-{% for r in patient_reports %}
-<tr class="border-t border-outline-variant hover:bg-surface-container-low transition-colors">
-<td class="px-lg py-md">
-<a class="font-label-md text-label-md text-primary hover:underline" href="{{ url_for('patient_detail', patient_id=r.id) }}">{{ r.name }}</a>
-<p class="text-label-sm text-on-surface-variant">{{ r.patient_code }}</p>
-</td>
-<td class="px-lg py-md text-on-surface font-body-sm">{{ r.adherence_pct ~ "%" if r.adherence_pct is not none else "No check-ins yet" }}</td>
-<td class="px-lg py-md text-on-surface font-body-sm">{{ (r.latest_rating ~ "/5") if r.latest_rating is not none else "No reports yet" }}</td>
-<td class="px-lg py-md">
-{% if r.active_flags > 0 %}
-<span class="bg-error-container text-on-error-container px-3 py-1 rounded-full font-label-sm text-label-sm font-bold uppercase">{{ r.active_flags }} flag{{ 's' if r.active_flags > 1 }}</span>
-{% else %}
-<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm font-bold uppercase">Stable</span>
-{% endif %}
-</td>
-</tr>
+<section class="space-y-md mb-xl">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-body-lg font-body-lg" id="report-search" placeholder="Search reports, patients, or medications..." type="text"/>
+</div>
+<div class="flex gap-xs overflow-x-auto pb-2" id="category-chips">
+<button class="px-5 py-2 rounded-full bg-primary text-on-primary text-label-md font-label-md whitespace-nowrap" data-category="all" type="button">All</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant text-label-md font-label-md whitespace-nowrap hover:bg-surface-container-highest transition-colors" data-category="records" type="button">Lab &amp; Scans</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant text-label-md font-label-md whitespace-nowrap hover:bg-surface-container-highest transition-colors" data-category="prescriptions" type="button">Prescriptions</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant text-label-md font-label-md whitespace-nowrap hover:bg-surface-container-highest transition-colors" data-category="notes" type="button">Clinical Notes</button>
+</div>
+</section>
+
+<div class="space-y-md" id="report-list">
+{% for record in medical_records %}
+<a class="report-item bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex items-start gap-md hover:bg-surface-container-low transition-colors" data-category="records" data-search="{{ record.title|lower }} {{ record.patient_name|lower }} {{ (record.summary or '')|lower }}" href="{{ url_for('patient_detail', patient_id=record.patient_id) }}">
+<div class="w-12 h-12 flex-shrink-0 bg-primary-fixed rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-fixed-variant">{{ "radiology" if record.record_type == "scan" else "science" }}</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-start mb-base gap-sm">
+<h3 class="text-body-lg font-semibold text-on-surface">{{ record.title }}</h3>
+<span class="text-label-sm font-label-sm text-outline px-2 py-1 bg-surface-container rounded-md uppercase tracking-wider shrink-0">{{ "Scan" if record.record_type == "scan" else "Lab" }}</span>
+</div>
+{% if record.summary %}<p class="text-body-sm font-body-sm text-on-surface-variant">{{ record.summary }}</p>{% endif %}
+<p class="text-body-sm font-body-sm text-on-surface-variant">For <span class="font-medium text-on-surface">{{ record.patient_name }}</span></p>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-outline mt-sm">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span>{{ record.record_date or record.created_at }}</span>
+</div>
+</div>
+</a>
 {% endfor %}
-</tbody>
-</table>
+
+{% for rx in prescriptions %}
+<a class="report-item bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex items-start gap-md hover:bg-surface-container-low transition-colors" data-category="prescriptions" data-search="{{ rx.medication_name|lower }} {{ rx.patient_name|lower }} {{ (rx.instructions or '')|lower }}" href="{{ url_for('patient_detail', patient_id=rx.patient_id) }}">
+<div class="w-12 h-12 flex-shrink-0 bg-secondary-fixed rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-fixed-variant">pill</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-start mb-base gap-sm">
+<h3 class="text-body-lg font-semibold text-on-surface">{{ rx.medication_name }}{% if rx.dosage %} · {{ rx.dosage }}{% endif %}</h3>
+<span class="text-label-sm font-label-sm text-outline px-2 py-1 bg-surface-container rounded-md uppercase tracking-wider shrink-0">Med</span>
+</div>
+{% if rx.instructions %}<p class="text-body-sm font-body-sm text-on-surface-variant">{{ rx.instructions }}</p>{% endif %}
+<p class="text-body-sm font-body-sm text-on-surface-variant">For <span class="font-medium text-on-surface">{{ rx.patient_name }}</span></p>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-outline mt-sm">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span>{{ rx.prescribed_date or rx.created_at }}</span>
 </div>
 </div>
-{% else %}
+</a>
+{% endfor %}
+
+{% for note in notes %}
+<a class="report-item bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex items-start gap-md hover:bg-surface-container-low transition-colors" data-category="notes" data-search="{{ note.patient_name|lower }} {{ note.note_text|lower }}" href="{{ url_for('patient_detail', patient_id=note.patient_id) }}">
+<div class="w-12 h-12 flex-shrink-0 bg-surface-container-high rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">description</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-start mb-base gap-sm">
+<h3 class="text-body-lg font-semibold text-on-surface">Clinical Note</h3>
+<span class="text-label-sm font-label-sm text-outline px-2 py-1 bg-surface-container rounded-md uppercase tracking-wider shrink-0">Notes</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">{{ note.note_text }}</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant">For <span class="font-medium text-on-surface">{{ note.patient_name }}</span></p>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-outline mt-sm">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span>{{ note.created_at }}</span>
+</div>
+</div>
+</a>
+{% endfor %}
+</div>
+
+{% if not medical_records and not prescriptions and not notes %}
 <div class="bento-card border-2 border-dashed border-outline-variant rounded-xl p-lg flex flex-col items-center justify-center gap-2 text-on-surface-variant min-h-[160px]">
 <span class="material-symbols-outlined text-3xl">summarize</span>
-<span class="font-label-md text-label-md">No patients yet — add a patient to see reports.</span>
+<span class="font-label-md text-label-md">No reports yet — records, prescriptions, and notes you add for patients will show up here.</span>
 </div>
 {% endif %}
+<div class="text-center text-on-surface-variant py-md hidden" id="no-results">No reports match your search.</div>
 </main>
 {% include "_stitch_doctor_bottomnav.html" %}
+<script>
+        document.querySelectorAll('#category-chips button').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('#category-chips button').forEach(btn => {
+                    btn.classList.remove('bg-primary', 'text-on-primary');
+                    btn.classList.add('bg-surface-container-high', 'text-on-surface-variant');
+                });
+                chip.classList.add('bg-primary', 'text-on-primary');
+                chip.classList.remove('bg-surface-container-high', 'text-on-surface-variant');
+                applyFilters();
+            });
+        });
+
+        const searchInput = document.getElementById('report-search');
+        if (searchInput) searchInput.addEventListener('input', applyFilters);
+
+        function applyFilters() {
+            const category = document.querySelector('#category-chips button.bg-primary').getAttribute('data-category');
+            const query = searchInput.value.toLowerCase().trim();
+            const items = document.querySelectorAll('.report-item');
+            let visibleCount = 0;
+            items.forEach(item => {
+                const matchesCategory = category === 'all' || item.getAttribute('data-category') === category;
+                const matchesSearch = item.getAttribute('data-search').includes(query);
+                const visible = matchesCategory && matchesSearch;
+                item.style.display = visible ? 'flex' : 'none';
+                if (visible) visibleCount++;
+            });
+            const noResults = document.getElementById('no-results');
+            if (noResults) noResults.style.display = (visibleCount === 0 && items.length > 0) ? 'block' : 'none';
+        }
+    </script>
 </body></html>

@@ -1,11 +1,10 @@
-const CACHE_NAME = "healio-v3";
+const CACHE_NAME = "healio-v4";
 const OFFLINE_URL = "/offline";
 const APP_SHELL = [
   "/",
   "/doctor/login",
   "/patient/login",
   OFFLINE_URL,
-  "/static/css/style.css",
   "/static/manifest.json",
   "/static/images/logo.jpg",
   "/static/icons/icon-192.png",

@@ -17,7 +17,7 @@
 <div class="relative shrink-0">
 <div class="w-24 h-24 rounded-full bg-surface-container-highest border-2 border-surface-container-highest overflow-hidden flex items-center justify-center">
 {% if doctor.photo_filename %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + doctor.photo_filename) }}" alt="{{ doctor.name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=doctor.photo_filename) }}" alt="{{ doctor.name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined text-on-surface-variant text-4xl">stethoscope</span>
 {% endif %}

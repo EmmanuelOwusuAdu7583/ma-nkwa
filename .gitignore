@@ -3,5 +3,3 @@ __pycache__/
 .venv/
 venv/
 healio.db
-static/uploads/*
-!static/uploads/.gitkeep

@@ -44,7 +44,7 @@
 <span>{{ record.record_date or record.created_at }}</span>
 </div>
 {% if record.file_filename %}
-<a class="ml-auto flex items-center gap-1 text-primary text-label-md font-label-md hover:underline" download href="{{ url_for('static', filename='uploads/' + record.file_filename) }}">
+<a class="ml-auto flex items-center gap-1 text-primary text-label-md font-label-md hover:underline" download href="{{ url_for('serve_upload', filename=record.file_filename) }}">
 <span class="material-symbols-outlined text-[18px]">download</span>
 Download
 </a>
@@ -72,7 +72,7 @@ Download
 <span>{{ rx.prescribed_date or rx.created_at }}</span>
 </div>
 {% if rx.file_filename %}
-<a class="ml-auto flex items-center gap-1 text-primary text-label-md font-label-md hover:underline" download href="{{ url_for('static', filename='uploads/' + rx.file_filename) }}">
+<a class="ml-auto flex items-center gap-1 text-primary text-label-md font-label-md hover:underline" download href="{{ url_for('serve_upload', filename=rx.file_filename) }}">
 <span class="material-symbols-outlined text-[18px]">download</span>
 Download
 </a>

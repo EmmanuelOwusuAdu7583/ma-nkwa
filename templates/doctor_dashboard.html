@@ -30,7 +30,7 @@ notifications
 </span>
 <div class="w-10 h-10 rounded-full border-2 border-primary-fixed overflow-hidden flex items-center justify-center bg-surface-container-highest">
 {% if session.doctor_photo %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + session.doctor_photo) }}" alt="{{ session.doctor_name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=session.doctor_photo) }}" alt="{{ session.doctor_name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined text-on-surface-variant">person</span>
 {% endif %}
@@ -98,7 +98,7 @@ notifications
 <a class="bg-surface-container-lowest p-md rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border-l-4 border-error flex gap-md items-center hover:bg-surface-container-low transition-colors" href="{{ url_for('patient_detail', patient_id=alert.patient_id) }}">
 <div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container shrink-0 flex items-center justify-center">
 {% if alert.patient_photo %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + alert.patient_photo) }}" alt="{{ alert.patient_name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=alert.patient_photo) }}" alt="{{ alert.patient_name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined text-on-surface-variant">person</span>
 {% endif %}
@@ -132,7 +132,7 @@ notifications
 <a class="bg-surface-container-lowest p-md rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant flex gap-md items-center hover:bg-surface-container-low transition-colors" href="{{ url_for('patient_detail', patient_id=appt.patient_id) }}">
 <div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container shrink-0 flex items-center justify-center">
 {% if appt.patient_photo %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + appt.patient_photo) }}" alt="{{ appt.patient_name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=appt.patient_photo) }}" alt="{{ appt.patient_name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined text-on-surface-variant">person</span>
 {% endif %}
@@ -171,7 +171,7 @@ notifications
 <div class="relative">
 <span class="w-12 h-12 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0 overflow-hidden">
 {% if patient.photo_filename %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + patient.photo_filename) }}" alt="{{ patient.name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=patient.photo_filename) }}" alt="{{ patient.name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined" title="No photo uploaded yet">person</span>
 {% endif %}

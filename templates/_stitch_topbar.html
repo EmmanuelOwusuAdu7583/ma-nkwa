@@ -11,7 +11,7 @@ notifications
 </a>
 <a class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border-2 border-primary/20" href="{{ url_for('patient_profile') }}" title="Your profile">
 {% if session.patient_photo %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + session.patient_photo) }}" alt="{{ session.patient_name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=session.patient_photo) }}" alt="{{ session.patient_name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined text-on-surface-variant text-[20px]">person</span>
 {% endif %}

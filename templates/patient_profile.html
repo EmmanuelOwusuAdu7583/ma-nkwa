@@ -16,7 +16,7 @@
 <div class="relative shrink-0">
 <div class="w-24 h-24 rounded-full bg-surface-container-highest border-2 border-surface-container-highest overflow-hidden flex items-center justify-center">
 {% if patient.photo_filename %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + patient.photo_filename) }}" alt="{{ patient.name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=patient.photo_filename) }}" alt="{{ patient.name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined text-on-surface-variant text-4xl">person</span>
 {% endif %}
@@ -79,7 +79,7 @@
 <p class="text-body-sm font-medium text-on-surface truncate">{{ doc.original_name }}</p>
 <p class="text-label-sm text-on-surface-variant">{{ format_file_size(doc.file_size) }} · {{ doc.uploaded_at }}</p>
 </div>
-<a class="w-8 h-8 flex items-center justify-center rounded-full text-primary hover:bg-primary-container/20 transition-colors" download href="{{ url_for('static', filename='uploads/' + doc.filename) }}">
+<a class="w-8 h-8 flex items-center justify-center rounded-full text-primary hover:bg-primary-container/20 transition-colors" download href="{{ url_for('serve_upload', filename=doc.filename) }}">
 <span class="material-symbols-outlined text-lg">download</span>
 </a>
 <form method="POST" action="{{ url_for('delete_patient_document', document_id=doc.id) }}">

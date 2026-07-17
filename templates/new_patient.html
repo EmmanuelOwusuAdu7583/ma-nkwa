@@ -13,7 +13,7 @@
 <a class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-2 rounded-full" data-icon="arrow_back" href="{{ url_for('doctor_dashboard') }}" aria-label="Back to dashboard">arrow_back</a>
 <div class="w-9 h-9 rounded-full bg-surface-container-highest overflow-hidden border-2 border-primary/20 shrink-0 flex items-center justify-center">
 {% if session.doctor_photo %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + session.doctor_photo) }}" alt="{{ session.doctor_name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=session.doctor_photo) }}" alt="{{ session.doctor_name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined text-on-surface-variant">person</span>
 {% endif %}

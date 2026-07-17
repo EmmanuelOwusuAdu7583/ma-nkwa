@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime, date, timedelta
 from functools import wraps
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, Response
 
 import psycopg2
 import psycopg2.extras
@@ -25,7 +25,6 @@ app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 DB_PATH = "healio.db"
-UPLOAD_FOLDER = os.path.join("static", "uploads")
 ALLOWED_PHOTO_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 ALLOWED_DOCUMENT_EXTENSIONS = ALLOWED_PHOTO_EXTENSIONS | {"pdf"}
 
@@ -237,6 +236,18 @@ def create_database():
         )
     """)
 
+    # Uploaded file bytes live here instead of on local disk, which Render
+    # wipes on every redeploy. photo_filename/file_filename/filename columns
+    # elsewhere are lookup keys into this table, not disk paths.
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS uploads (
+            filename TEXT PRIMARY KEY,
+            content_type TEXT NOT NULL,
+            data BLOB NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -408,6 +419,15 @@ def create_database_postgres():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS uploads (
+            filename TEXT PRIMARY KEY,
+            content_type TEXT NOT NULL,
+            data BYTEA NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -459,7 +479,9 @@ def generate_password(length=10):
 
 
 def save_uploaded_file(file_storage, allowed_extensions, old_filename=None):
-    """Validates and saves an uploaded file, returning its stored filename or None."""
+    """Validates an uploaded file and stores its bytes in the uploads table
+    (not local disk, which Render wipes on every redeploy), returning its
+    filename key or None."""
     if not file_storage or not file_storage.filename:
         return None, "No file selected."
 
@@ -468,15 +490,21 @@ def save_uploaded_file(file_storage, allowed_extensions, old_filename=None):
         return None, "Unsupported file type."
 
     filename = f"{uuid.uuid4().hex}.{ext}"
-    safe_name = secure_filename(filename)
-    file_storage.save(os.path.join(UPLOAD_FOLDER, safe_name))
+    data = file_storage.read()
+    content_type = file_storage.mimetype or "application/octet-stream"
 
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO uploads (filename, content_type, data) VALUES (?, ?, ?)",
+        (filename, content_type, data),
+    )
     if old_filename:
-        old_path = os.path.join(UPLOAD_FOLDER, old_filename)
-        if os.path.exists(old_path):
-            os.remove(old_path)
+        cursor.execute("DELETE FROM uploads WHERE filename = ?", (old_filename,))
+    conn.commit()
+    conn.close()
 
-    return safe_name, None
+    return filename, None
 
 
 def save_uploaded_photo(file_storage, old_filename=None):
@@ -637,6 +665,18 @@ def service_worker():
     # the whole origin, not just /static/ — required for it to control
     # actual page navigations, not only static asset requests.
     return send_from_directory(app.static_folder, "service-worker.js")
+
+
+@app.route("/uploads/<filename>")
+def serve_upload(filename):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT data, content_type FROM uploads WHERE filename = ?", (filename,))
+    row = cursor.fetchone()
+    conn.close()
+    if not row:
+        return "", 404
+    return Response(bytes(row["data"]), mimetype=row["content_type"])
 
 
 @app.route("/offline")
@@ -1676,12 +1716,14 @@ def new_patient_document():
         return redirect(url_for("patient_profile"))
 
     original_name = secure_filename(file_storage.filename)
+    file_storage.stream.seek(0, os.SEEK_END)
+    file_size = file_storage.stream.tell()
+    file_storage.stream.seek(0)
+
     filename, error = save_uploaded_document(file_storage)
     if error:
         flash(error)
         return redirect(url_for("patient_profile"))
-
-    file_size = os.path.getsize(os.path.join(UPLOAD_FOLDER, filename))
 
     conn = get_db()
     cursor = conn.cursor()
@@ -1703,9 +1745,7 @@ def delete_patient_document(document_id):
     cursor.execute("SELECT * FROM patient_documents WHERE id = ? AND patient_id = ?", (document_id, session["patient_id"]))
     document = cursor.fetchone()
     if document:
-        file_path = os.path.join(UPLOAD_FOLDER, document["filename"])
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        cursor.execute("DELETE FROM uploads WHERE filename = ?", (document["filename"],))
         cursor.execute("DELETE FROM patient_documents WHERE id = ?", (document_id,))
         conn.commit()
         flash("Document removed.")
@@ -1739,7 +1779,6 @@ def contact():
 
 create_database()
 migrate_database()
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -100,7 +100,7 @@
 <div class="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant flex items-center gap-md">
 <div class="w-14 h-14 rounded-xl bg-surface-container overflow-hidden flex items-center justify-center shrink-0">
 {% if next_appointment.doctor_photo %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + next_appointment.doctor_photo) }}" alt="{{ next_appointment.doctor_name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=next_appointment.doctor_photo) }}" alt="{{ next_appointment.doctor_name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined text-on-surface-variant">stethoscope</span>
 {% endif %}

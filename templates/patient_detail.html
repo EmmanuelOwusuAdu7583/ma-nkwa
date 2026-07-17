@@ -20,7 +20,7 @@ notifications
 </a>
 <a class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border-2 border-primary/20 flex items-center justify-center" href="{{ url_for('doctor_profile') }}" title="Your profile">
 {% if session.doctor_photo %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + session.doctor_photo) }}" alt="{{ session.doctor_name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=session.doctor_photo) }}" alt="{{ session.doctor_name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined text-on-surface-variant text-[20px]">person</span>
 {% endif %}
@@ -34,7 +34,7 @@ notifications
 <section class="bg-surface-container-lowest rounded-xl p-lg shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col md:flex-row gap-lg items-start md:items-center">
 <div class="w-20 h-20 rounded-xl bg-surface-container overflow-hidden shrink-0 flex items-center justify-center">
 {% if patient.photo_filename %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + patient.photo_filename) }}" alt="{{ patient.name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=patient.photo_filename) }}" alt="{{ patient.name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined text-on-surface-variant text-3xl">person</span>
 {% endif %}
@@ -274,7 +274,7 @@ notifications
 <div class="flex justify-between items-start">
 <p class="text-body-sm font-bold text-on-surface">{{ record.title }} <span class="text-label-sm font-label-sm text-outline uppercase">· {{ "Scan" if record.record_type == "scan" else "Lab" }}</span></p>
 {% if record.file_filename %}
-<a class="text-primary text-label-sm font-label-md hover:underline shrink-0" href="{{ url_for('static', filename='uploads/' + record.file_filename) }}" download>Download</a>
+<a class="text-primary text-label-sm font-label-md hover:underline shrink-0" href="{{ url_for('serve_upload', filename=record.file_filename) }}" download>Download</a>
 {% endif %}
 </div>
 {% if record.summary %}<p class="text-body-sm text-on-surface-variant mt-1">{{ record.summary }}</p>{% endif %}
@@ -318,7 +318,7 @@ notifications
 <div class="flex justify-between items-start">
 <p class="text-body-sm font-bold text-on-surface">{{ rx.medication_name }}{% if rx.dosage %} <span class="text-label-sm font-label-sm text-on-surface-variant">· {{ rx.dosage }}</span>{% endif %}</p>
 {% if rx.file_filename %}
-<a class="text-primary text-label-sm font-label-md hover:underline shrink-0" href="{{ url_for('static', filename='uploads/' + rx.file_filename) }}" download>Download</a>
+<a class="text-primary text-label-sm font-label-md hover:underline shrink-0" href="{{ url_for('serve_upload', filename=rx.file_filename) }}" download>Download</a>
 {% endif %}
 </div>
 {% if rx.instructions %}<p class="text-body-sm text-on-surface-variant mt-1">{{ rx.instructions }}</p>{% endif %}
@@ -345,7 +345,7 @@ notifications
 <p class="text-body-sm font-medium text-on-surface truncate">{{ doc.original_name }}</p>
 <p class="text-label-sm text-on-surface-variant">{{ format_file_size(doc.file_size) }} · {{ doc.uploaded_at }}</p>
 </div>
-<a class="text-primary text-label-sm font-label-md hover:underline shrink-0" download href="{{ url_for('static', filename='uploads/' + doc.filename) }}">Download</a>
+<a class="text-primary text-label-sm font-label-md hover:underline shrink-0" download href="{{ url_for('serve_upload', filename=doc.filename) }}">Download</a>
 </div>
 {% endfor %}
 </div>

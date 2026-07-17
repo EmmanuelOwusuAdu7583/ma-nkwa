@@ -8,7 +8,7 @@
 <div class="flex items-center gap-3">
 <a class="w-10 h-10 rounded-full bg-primary-fixed overflow-hidden flex items-center justify-center" href="{{ url_for('patient_profile') }}" title="Your profile">
 {% if session.patient_photo %}
-<img class="w-full h-full object-cover" src="{{ url_for('static', filename='uploads/' + session.patient_photo) }}" alt="{{ session.patient_name }}'s profile photo"/>
+<img class="w-full h-full object-cover" src="{{ url_for('serve_upload', filename=session.patient_photo) }}" alt="{{ session.patient_name }}'s profile photo"/>
 {% else %}
 <span class="material-symbols-outlined text-primary">person</span>
 {% endif %}
